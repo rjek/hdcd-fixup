@@ -1,0 +1,4 @@
+hdcd-fixup
+hdcd-fixup.o
+*.flac
+*.flac.hdcd

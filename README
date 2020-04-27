@@ -1,0 +1,38 @@
+hdcd-fixup: a quick hack to help scan and decode (ie, remove) HDCD
+encoding from your music collection.
+
+You will need libsndfile (widely packaged) and libhdcd (not in Debian at least,
+see https://github.com/bp0/libhdcd) to build this.
+
+Usage:
+    hdcp-fixup [options] file [fileN ...]
+
+    -v: be verbose.  Use twice to be very chatty indeed.
+    -b: do *NOT* create the .hdcd backup when replacing files.
+    -s: scan only, returns true if the file has effectual HDCD encoding.
+
+Some examples of use:
+
+Check if a file has HDCD encoding:
+    if [ hdcd-fixup -s somefile.flac ]; then
+        echo sadface, this has HDCD
+    fi
+
+Spider your collection, scanning for HDCD and reporting back:
+    find /music -type f -name "*.flac" -print0 | xargs -P$(nproc) -n1 -0 hdcd-fixup -vs
+
+Spider your collection, scanning for HDCD and converting tracks where it is
+used to some effect to a 24 bit version, keeping the old as filename.hdcd:
+
+    find /music -type f -name "*.flac" -print0 | xargs -P$(nproc) -n8 -0 hdcd-fixup
+
+Note, that this tool will attempt to copy tag information across to the newly
+created file, but libsndfile's API does not support arbitrary keys, so only
+common tags are transferred.  (Artist, track name, album, etc).
+
+It supports FLAC, WAV, AIFF, AU, etc as input formats and will try to match
+the output format to the input.  When using FLAC it always recompresses using
+libFLAC's maximum compression.
+
+There is no warranty for this.  If it destroys your record collection, I'm sorry
+but you should have backups and not trust strangers on the internet.
